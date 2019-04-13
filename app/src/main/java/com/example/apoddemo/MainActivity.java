@@ -11,7 +11,10 @@ import android.widget.TextView;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -21,12 +24,19 @@ import org.json.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ImageView img = (ImageView) findViewById(R.id.podImg);
+        final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
+        img.setImageResource(imgDefault);
 
         TextView desc = (TextView) findViewById(R.id.imageDescription);
         desc.setMovementMethod(new ScrollingMovementMethod());
@@ -39,13 +49,12 @@ public class MainActivity extends AppCompatActivity {
 
         final ImageView img = (ImageView) findViewById(R.id.podImg);
 
-        final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
-        img.setImageResource(imgDefault);
+        //final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
 
         RequestQueue queue = Volley.newRequestQueue(this);
         //String url = "https://www.google.com";
-        String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY";
-        //String url = "https://api.nasa.gov/planetary/apod?api_key=hCcahvUhc0xMW2H2mox6vYpS7jKPU2SM1Rv5xMhZ";
+        //String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY";
+        String url = "https://api.nasa.gov/planetary/apod?api_key=hCcahvUhc0xMW2H2mox6vYpS7jKPU2SM1Rv5xMhZ";
 
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -57,20 +66,37 @@ public class MainActivity extends AppCompatActivity {
 
                             title.setText(response.getString("title"));
                             desc.setText(response.getString("explanation"));
+
                             if(response.has("copyright")) {
                                 copyright.setText(response.getString("copyright"));
                             }
                             else {
                                 copyright.setText("");
                             }
+
                             if(response.has("url")){
-                                System.out.println("url detected");
-                                int imgResource = getResources().getIdentifier(imgurl, null, getPackageName());
-                                img.setImageResource(imgResource);
+
+                                ImageRequest imgreq = new ImageRequest(imgurl, new Response.Listener<Bitmap>() {
+                                    @Override
+                                    public void onResponse(Bitmap bmp) {
+                                        img.setImageBitmap(bmp);
+
+                                    }
+                                }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        img.setImageResource(R.drawable.oops);
+                                    }
+                                });
+
+                                //Bitmap bmp = imgurl.
+                                //int imgRes = get
+                                //img.
                             }
                             else{
-                                img.setImageResource(imgDefault);
+                                img.setImageResource(R.drawable.oops);
                             }
+
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -79,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        desc.setText("There was an error fetching information");
+                        desc.setText("@string/responseError");
                     }
         });
 
