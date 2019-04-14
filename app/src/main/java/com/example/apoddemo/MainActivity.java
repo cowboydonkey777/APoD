@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +27,9 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         ImageView img = (ImageView) findViewById(R.id.podImg);
-        final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
+        int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
         img.setImageResource(imgDefault);
 
         TextView desc = (TextView) findViewById(R.id.imageDescription);
@@ -49,12 +53,30 @@ public class MainActivity extends AppCompatActivity {
 
         final ImageView img = (ImageView) findViewById(R.id.podImg);
 
-        //final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
+        final Calendar day = Calendar.getInstance();
+        final String[] date = {formatter(day)};
 
-        RequestQueue queue = Volley.newRequestQueue(this);
         //String url = "https://www.google.com";
         //String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY";
         String url = "https://api.nasa.gov/planetary/apod?api_key=hCcahvUhc0xMW2H2mox6vYpS7jKPU2SM1Rv5xMhZ";
+        url.concat("&date=2018-06-12");
+
+        final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
+
+        Button prevBtn = (Button) findViewById(R.id.prevBtn);
+        prevBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                day.add(Calendar.DATE, -1);
+                date[0] = "&date=";
+                date[0].concat("2018-06-12");
+                //date[0].concat(formatter(day));
+            }
+        });
+
+
+
+        final RequestQueue queue = Volley.newRequestQueue(this);
 
         JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
@@ -62,32 +84,35 @@ public class MainActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
 
-                            String imgurl = response.getString("url");
+                            String picurl = response.getString("url");
 
                             title.setText(response.getString("title"));
-                            desc.setText(response.getString("explanation"));
-
                             if(response.has("copyright")) {
                                 copyright.setText(response.getString("copyright"));
                             }
                             else {
                                 copyright.setText("");
                             }
+                            desc.setText(response.getString("explanation"));
 
                             if(response.has("url")){
 
-                                ImageRequest imgreq = new ImageRequest(imgurl, new Response.Listener<Bitmap>() {
+
+
+                                ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
                                     @Override
                                     public void onResponse(Bitmap bmp) {
                                         img.setImageBitmap(bmp);
 
+
                                     }
-                                }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+                                }, 0, 0, null, /*Bitmap.Config.RGB_565,*/ new Response.ErrorListener() {
                                     @Override
                                     public void onErrorResponse(VolleyError error) {
                                         img.setImageResource(R.drawable.oops);
                                     }
                                 });
+                                queue.add(imgRequest);
 
                                 //Bitmap bmp = imgurl.
                                 //int imgRes = get
@@ -111,6 +136,29 @@ public class MainActivity extends AppCompatActivity {
 
         queue.add(stringRequest);
 
+    }
+
+    public String previousDate(Calendar cal){
+        cal.add(cal.DATE, -1);
+        Date date = cal.getTime();
+
+        return formatter(date);
+    }
+
+    public String formatter(Date date){
+        final String pattern = "yyyy-mm-dd";
+        SimpleDateFormat ymd = new SimpleDateFormat(pattern);
+        String form = ymd.format(date);
+
+        return form;
+    }
+    public String formatter(Calendar cal){
+        Date date = cal.getTime();
+        final String pattern = "yyyy-mm-dd";
+        SimpleDateFormat ymd = new SimpleDateFormat(pattern);
+        String form = ymd.format(date);
+
+        return form;
     }
 
 }
