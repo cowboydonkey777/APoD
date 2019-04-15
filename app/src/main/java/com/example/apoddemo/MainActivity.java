@@ -119,17 +119,13 @@ public class MainActivity extends AppCompatActivity {
 
 
                                             }
-                                        }, 0, 0, null, /*Bitmap.Config.RGB_565,*/ new Response.ErrorListener() {
+                                        }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
                                             @Override
                                             public void onErrorResponse(VolleyError error) {
                                                 img.setImageResource(R.drawable.oops);
                                             }
                                         });
                                         queue.add(imgRequest);
-
-                                        //Bitmap bmp = imgurl.
-                                        //int imgRes = get
-                                        //img.
                                     }
                                     else{
                                         img.setImageResource(R.drawable.oops);
@@ -143,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        desc.setText("@strings/responseError");
+                        desc.setText(R.string.responseError);
                     }
                 });
 
@@ -197,17 +193,13 @@ public class MainActivity extends AppCompatActivity {
 
 
                                             }
-                                        }, 0, 0, null, /*Bitmap.Config.RGB_565,*/ new Response.ErrorListener() {
+                                        }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
                                             @Override
                                             public void onErrorResponse(VolleyError error) {
                                                 img.setImageResource(R.drawable.oops);
                                             }
                                         });
                                         queue.add(imgRequest);
-
-                                        //Bitmap bmp = imgurl.
-                                        //int imgRes = get
-                                        //img.
                                     }
                                     else{
                                         img.setImageResource(R.drawable.oops);
@@ -221,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        desc.setText("@strings/responseError");
+                        desc.setText(R.string.responseError);
                     }
                 });
 
@@ -276,10 +268,6 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                         });
                                         queue.add(imgRequest);
-
-                                        //Bitmap bmp = imgurl.
-                                        //int imgRes = get
-                                        //img.
                                     }
                                     else{
                                         img.setImageResource(R.drawable.oops);
@@ -293,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        desc.setText("@strings/responseError");
+                        desc.setText(R.string.responseError);
                     }
                 });
                 queue.add(stringRequest);
