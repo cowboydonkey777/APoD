@@ -27,9 +27,11 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -44,110 +46,267 @@ public class MainActivity extends AppCompatActivity {
 
         TextView desc = (TextView) findViewById(R.id.imageDescription);
         desc.setMovementMethod(new ScrollingMovementMethod());
+        fetchInfo();
     }
 
-    public void fetchInfo(View view) {
+    public void fetchInfo(/*View view*/) {
         final TextView title = (TextView) findViewById(R.id.imageTitle);
         final TextView copyright = (TextView) findViewById(R.id.imageCopyright);
         final TextView desc = (TextView) findViewById(R.id.imageDescription);
 
         final ImageView img = (ImageView) findViewById(R.id.podImg);
 
+        final Calendar currentDay = Calendar.getInstance();
+        final Date currentDateDay = currentDay.getTime();
         final Calendar day = Calendar.getInstance();
+        final TextView time = (TextView) findViewById(R.id.date);
+
         final String[] date = {formatter(day)};
+        time.setText(formatter(currentDateDay));
 
         //String url = "https://www.google.com";
         //String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY";
-        String url = "https://api.nasa.gov/planetary/apod?api_key=hCcahvUhc0xMW2H2mox6vYpS7jKPU2SM1Rv5xMhZ";
-        url.concat("&date=2018-06-12");
+        final String keyurl = "https://api.nasa.gov/planetary/apod?api_key=hCcahvUhc0xMW2H2mox6vYpS7jKPU2SM1Rv5xMhZ";
+        final String[] url = {""};
+        //url.concat("&date=2018-06-10");
 
         final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
 
         Button prevBtn = (Button) findViewById(R.id.prevBtn);
+        Button nextBtn = (Button) findViewById(R.id.nextBtn);
+        Button fetch = (Button) findViewById(R.id.fetch);
+
+        final RequestQueue queue = Volley.newRequestQueue(this);
+
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 day.add(Calendar.DATE, -1);
+                Date volDay = day.getTime();
+                time.setText(formatter(volDay));
                 date[0] = "&date=";
-                date[0].concat("2018-06-12");
-                //date[0].concat(formatter(day));
+                date[0] = date[0].concat(formatter(volDay));
+                url[0] = keyurl;
+                url[0] = url[0].concat(date[0]);
+
+
+                //---------------------
+                JsonObjectRequest updateRequest = new JsonObjectRequest(Request.Method.GET, url[0], null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+
+                                    String picurl = response.getString("url");
+
+                                    title.setText(response.getString("title"));
+                                    if(response.has("copyright")) {
+                                        copyright.setText(response.getString("copyright"));
+                                    }
+                                    else {
+                                        copyright.setText("");
+                                    }
+                                    desc.setText(response.getString("explanation"));
+
+                                    if(response.has("url")){
+
+
+
+                                        ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
+                                            @Override
+                                            public void onResponse(Bitmap bmp) {
+                                                img.setImageBitmap(bmp);
+
+
+                                            }
+                                        }, 0, 0, null, /*Bitmap.Config.RGB_565,*/ new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                img.setImageResource(R.drawable.oops);
+                                            }
+                                        });
+                                        queue.add(imgRequest);
+
+                                        //Bitmap bmp = imgurl.
+                                        //int imgRes = get
+                                        //img.
+                                    }
+                                    else{
+                                        img.setImageResource(R.drawable.oops);
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        desc.setText("@strings/responseError");
+                    }
+                });
+
+                queue.add(updateRequest);
+                //----------------------------------
+            }
+        });
+
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                day.add(Calendar.DATE, 1);
+                while(day.compareTo(currentDay) > 0){
+                    //day[0] = currentDay;
+                    day.add(Calendar.DATE, -1);
+                }
+                Date volDay = day.getTime();
+                time.setText(formatter(volDay));
+                date[0] = "&date=";
+                date[0] = date[0].concat(formatter(volDay));
+                url[0] = keyurl;
+                url[0] = url[0].concat(date[0]);
+
+
+                //---------------------
+                JsonObjectRequest updateRequest = new JsonObjectRequest(Request.Method.GET, url[0], null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+
+                                    String picurl = response.getString("url");
+
+                                    title.setText(response.getString("title"));
+                                    if(response.has("copyright")) {
+                                        copyright.setText(response.getString("copyright"));
+                                    }
+                                    else {
+                                        copyright.setText("");
+                                    }
+                                    desc.setText(response.getString("explanation"));
+
+                                    if(response.has("url")){
+
+
+
+                                        ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
+                                            @Override
+                                            public void onResponse(Bitmap bmp) {
+                                                img.setImageBitmap(bmp);
+
+
+                                            }
+                                        }, 0, 0, null, /*Bitmap.Config.RGB_565,*/ new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                img.setImageResource(R.drawable.oops);
+                                            }
+                                        });
+                                        queue.add(imgRequest);
+
+                                        //Bitmap bmp = imgurl.
+                                        //int imgRes = get
+                                        //img.
+                                    }
+                                    else{
+                                        img.setImageResource(R.drawable.oops);
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        desc.setText("@strings/responseError");
+                    }
+                });
+
+                queue.add(updateRequest);
+                //----------------------------------
+            }
+        });
+
+        fetch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                time.setText(formatter(currentDateDay));
+                url[0] = keyurl;
+                while(day.compareTo(currentDay) > 0){
+                    day.add(Calendar.DATE, -1);
+                }
+                while(day.compareTo(currentDay) < 0){
+                    day.add(Calendar.DATE, 1);
+                }
+                JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url[0], null,
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+
+                                    String picurl = response.getString("url");
+
+                                    title.setText(response.getString("title"));
+                                    if(response.has("copyright")) {
+                                        copyright.setText(response.getString("copyright"));
+                                    }
+                                    else {
+                                        copyright.setText("");
+                                    }
+                                    desc.setText(response.getString("explanation"));
+
+                                    if(response.has("url")){
+
+
+
+                                        ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
+                                            @Override
+                                            public void onResponse(Bitmap bmp) {
+                                                img.setImageBitmap(bmp);
+
+
+                                            }
+                                        }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+                                                img.setImageResource(R.drawable.oops);
+                                            }
+                                        });
+                                        queue.add(imgRequest);
+
+                                        //Bitmap bmp = imgurl.
+                                        //int imgRes = get
+                                        //img.
+                                    }
+                                    else{
+                                        img.setImageResource(R.drawable.oops);
+                                    }
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        desc.setText("@strings/responseError");
+                    }
+                });
+                queue.add(stringRequest);
+
             }
         });
 
 
-
-        final RequestQueue queue = Volley.newRequestQueue(this);
-
-        JsonObjectRequest stringRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-
-                            String picurl = response.getString("url");
-
-                            title.setText(response.getString("title"));
-                            if(response.has("copyright")) {
-                                copyright.setText(response.getString("copyright"));
-                            }
-                            else {
-                                copyright.setText("");
-                            }
-                            desc.setText(response.getString("explanation"));
-
-                            if(response.has("url")){
-
-
-
-                                ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
-                                    @Override
-                                    public void onResponse(Bitmap bmp) {
-                                        img.setImageBitmap(bmp);
-
-
-                                    }
-                                }, 0, 0, null, /*Bitmap.Config.RGB_565,*/ new Response.ErrorListener() {
-                                    @Override
-                                    public void onErrorResponse(VolleyError error) {
-                                        img.setImageResource(R.drawable.oops);
-                                    }
-                                });
-                                queue.add(imgRequest);
-
-                                //Bitmap bmp = imgurl.
-                                //int imgRes = get
-                                //img.
-                            }
-                            else{
-                                img.setImageResource(R.drawable.oops);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        desc.setText("@string/responseError");
-                    }
-        });
-
-        queue.add(stringRequest);
-
-    }
-
-    public String previousDate(Calendar cal){
-        cal.add(cal.DATE, -1);
-        Date date = cal.getTime();
-
-        return formatter(date);
     }
 
     public String formatter(Date date){
-        final String pattern = "yyyy-mm-dd";
-        SimpleDateFormat ymd = new SimpleDateFormat(pattern);
+        final String pattern = "yyyy-MM-dd";
+        DateFormat ymd = new SimpleDateFormat(pattern);
         String form = ymd.format(date);
 
         return form;

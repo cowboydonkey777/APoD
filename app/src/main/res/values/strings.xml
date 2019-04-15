@@ -3,4 +3,8 @@
     <string name="descinit">What wonders of the cosmos await you?</string>
     <string name="cr">NASA legalize to appear here</string>
     <string name="responseError">Error retrieving NASA info, they might be updating as we speak</string>
+    <string name="prev">prev</string>
+    <string name="next">next</string>
+    <string name="get">Get Pic</string>
+    <string name="picaday">Picture a Day!</string>
 </resources>
