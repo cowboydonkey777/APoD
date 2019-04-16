@@ -1,12 +1,15 @@
 package com.example.apoddemo;
 
 import android.graphics.Bitmap;
+import android.support.constraint.Constraints;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -64,6 +67,12 @@ public class MainActivity extends AppCompatActivity {
         final String[] date = {formatter(day)};
         time.setText(formatter(currentDateDay));
 
+        Spinner spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.saveload, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
         //String url = "https://www.google.com";
         //String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY";
         final String keyurl = "https://api.nasa.gov/planetary/apod?api_key=hCcahvUhc0xMW2H2mox6vYpS7jKPU2SM1Rv5xMhZ";
@@ -101,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
 
                                     title.setText(response.getString("title"));
                                     if(response.has("copyright")) {
-                                        copyright.setText(response.getString("copyright"));
-                                    }
+                                            copyright.setText(response.getString("copyright").replace(System.getProperty("line.separator"), " "));
+                                       }
                                     else {
                                         copyright.setText("");
                                     }
@@ -122,13 +131,13 @@ public class MainActivity extends AppCompatActivity {
                                         }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
                                             @Override
                                             public void onErrorResponse(VolleyError error) {
-                                                img.setImageResource(R.drawable.oops);
+                                                img.setImageResource(R.drawable.oops2);
                                             }
                                         });
                                         queue.add(imgRequest);
                                     }
                                     else{
-                                        img.setImageResource(R.drawable.oops);
+                                        img.setImageResource(R.drawable.oops2);
                                     }
 
                                 } catch (JSONException e) {
@@ -175,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     title.setText(response.getString("title"));
                                     if(response.has("copyright")) {
-                                        copyright.setText(response.getString("copyright"));
+                                        copyright.setText(response.getString("copyright").replace(System.getProperty("line.separator"), " "));
                                     }
                                     else {
                                         copyright.setText("");
@@ -196,13 +205,13 @@ public class MainActivity extends AppCompatActivity {
                                         }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
                                             @Override
                                             public void onErrorResponse(VolleyError error) {
-                                                img.setImageResource(R.drawable.oops);
+                                                img.setImageResource(R.drawable.oops2);
                                             }
                                         });
                                         queue.add(imgRequest);
                                     }
                                     else{
-                                        img.setImageResource(R.drawable.oops);
+                                        img.setImageResource(R.drawable.oops2);
                                     }
 
                                 } catch (JSONException e) {
@@ -243,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
                                     title.setText(response.getString("title"));
                                     if(response.has("copyright")) {
-                                        copyright.setText(response.getString("copyright"));
+                                        copyright.setText(response.getString("copyright").replace(System.getProperty("line.separator"), " "));
                                     }
                                     else {
                                         copyright.setText("");
@@ -264,13 +273,13 @@ public class MainActivity extends AppCompatActivity {
                                         }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
                                             @Override
                                             public void onErrorResponse(VolleyError error) {
-                                                img.setImageResource(R.drawable.oops);
+                                                img.setImageResource(R.drawable.oops2);
                                             }
                                         });
                                         queue.add(imgRequest);
                                     }
                                     else{
-                                        img.setImageResource(R.drawable.oops);
+                                        img.setImageResource(R.drawable.oops2);
                                     }
 
                                 } catch (JSONException e) {

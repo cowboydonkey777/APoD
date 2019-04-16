@@ -7,4 +7,9 @@
     <string name="next">next</string>
     <string name="get">Get Pic</string>
     <string name="picaday">Picture a Day!</string>
+
+    <string-array name="saveload">
+        <item>Save Image To Favorites</item>
+        <item>Load A Favorite Image</item>
+    </string-array>
 </resources>

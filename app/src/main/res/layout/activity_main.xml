@@ -4,26 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#ADADAD"
     tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/imageTitle"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:text="@string/picaday"
-        android:textSize="24sp"
+        android:textSize="18sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/spinner"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/imageCopyright"
         android:layout_width="0dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="12dp"
+        android:layout_height="16dp"
+        android:background="#FFDDFF"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/podImg" />
 
@@ -31,16 +35,16 @@
         android:id="@+id/imageDescription"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="20dp"
+        android:background="#FFDDFF"
         android:scrollbars="vertical"
         android:text="@string/descinit"
-        android:textSize="24sp"
+        android:textSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/date"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageCopyright" />
+        app:layout_constraintTop_toBottomOf="@+id/imageCopyright"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/fetch"
@@ -61,6 +65,7 @@
         android:id="@+id/podImg"
         android:layout_width="414dp"
         android:layout_height="292dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:scaleType="centerInside"
@@ -99,12 +104,10 @@
     <TextView
         android:id="@+id/date"
         android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_height="21dp"
+        android:layout_marginBottom="12dp"
+        android:background="#FFDDDD"
+        android:textSize="12sp"
         app:layout_constraintBottom_toTopOf="@+id/fetch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -112,15 +115,9 @@
 
     <Spinner
         android:id="@+id/spinner"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/podImg"
-        app:layout_constraintEnd_toStartOf="@+id/imageTitle"
+        android:layout_width="32dp"
+        android:layout_height="20dp"
+        android:spinnerMode="dropdown"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>
