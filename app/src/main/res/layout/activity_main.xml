@@ -24,6 +24,7 @@
         android:id="@+id/imageCopyright"
         android:layout_width="0dp"
         android:layout_height="16dp"
+        android:layout_marginTop="8dp"
         android:background="#FFDDFF"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,20 +61,6 @@
         app:layout_constraintEnd_toStartOf="@+id/nextBtn"
         app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toEndOf="@+id/prevBtn" />
-
-    <ImageView
-        android:id="@+id/podImg"
-        android:layout_width="414dp"
-        android:layout_height="292dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:scaleType="centerInside"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageTitle"
-        app:srcCompat="@android:color/background_light" />
 
     <Button
         android:id="@+id/prevBtn"
@@ -120,4 +107,13 @@
         android:spinnerMode="dropdown"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <WebView
+        android:id="@+id/podImg"
+        android:layout_width="395dp"
+        android:layout_height="284dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageTitle" />
 </android.support.constraint.ConstraintLayout>

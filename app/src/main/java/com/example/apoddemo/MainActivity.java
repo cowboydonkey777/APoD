@@ -1,11 +1,13 @@
 package com.example.apoddemo;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.constraint.Constraints;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -43,9 +45,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ImageView img = (ImageView) findViewById(R.id.podImg);
+        WebView img = (WebView) findViewById(R.id.podImg);
         int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
-        img.setImageResource(imgDefault);
+        img.loadDataWithBaseURL("file:///android_res/drawable/", "<img src=rocket.png/>",
+                "text/html", "utf-8", null);
 
         TextView desc = (TextView) findViewById(R.id.imageDescription);
         desc.setMovementMethod(new ScrollingMovementMethod());
@@ -57,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView copyright = (TextView) findViewById(R.id.imageCopyright);
         final TextView desc = (TextView) findViewById(R.id.imageDescription);
 
-        final ImageView img = (ImageView) findViewById(R.id.podImg);
+        final WebView img = (WebView) findViewById(R.id.podImg);
 
         final Calendar currentDay = Calendar.getInstance();
         final Date currentDateDay = currentDay.getTime();
