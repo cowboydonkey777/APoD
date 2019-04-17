@@ -6,6 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -58,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
         final TextView desc = (TextView) findViewById(R.id.imageDescription);
 
         final ImageView img = (ImageView) findViewById(R.id.podImg);
+        final WebView webvid = (WebView) findViewById(R.id.podWeb);
+
+        WebSettings webset = webvid.getSettings();
+        webset.setJavaScriptEnabled(true);
 
         final Calendar currentDay = Calendar.getInstance();
         final Date currentDateDay = currentDay.getTime();
@@ -119,22 +125,30 @@ public class MainActivity extends AppCompatActivity {
 
                                     if(response.has("url")){
 
+                                        if(response.getString("media_type").equals("video")){
+                                            img.setVisibility(View.INVISIBLE);
+                                            webvid.setVisibility(View.VISIBLE);
+                                            webvid.loadUrl(picurl);
+                                        }
+                                        else{
+                                            webvid.setVisibility(View.INVISIBLE);
+                                            webvid.loadUrl("about:blank");
+                                            img.setVisibility(View.VISIBLE);
+                                            ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
+                                                @Override
+                                                public void onResponse(Bitmap bmp) {
+                                                    img.setImageBitmap(bmp);
 
 
-                                        ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
-                                            @Override
-                                            public void onResponse(Bitmap bmp) {
-                                                img.setImageBitmap(bmp);
-
-
-                                            }
-                                        }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                img.setImageResource(R.drawable.oops2);
-                                            }
-                                        });
-                                        queue.add(imgRequest);
+                                                }
+                                            }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    img.setImageResource(R.drawable.oops2);
+                                                }
+                                            });
+                                            queue.add(imgRequest);
+                                        }
                                     }
                                     else{
                                         img.setImageResource(R.drawable.oops2);
