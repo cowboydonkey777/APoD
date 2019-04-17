@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                         else{
                                             webvid.setVisibility(View.INVISIBLE);
-                                            webvid.loadUrl("about:blank");
+                                            //webvid.loadUrl("about:blank");
                                             img.setVisibility(View.VISIBLE);
                                             ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
                                                 @Override
@@ -207,22 +207,30 @@ public class MainActivity extends AppCompatActivity {
 
                                     if(response.has("url")){
 
+                                        if(response.getString("media_type").equals("video")){
+                                            img.setVisibility(View.INVISIBLE);
+                                            webvid.setVisibility(View.VISIBLE);
+                                            webvid.loadUrl(picurl);
+                                        }
+                                        else{
+                                            webvid.setVisibility(View.INVISIBLE);
+                                            //webvid.loadUrl("about:blank");
+                                            img.setVisibility(View.VISIBLE);
+                                            ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
+                                                @Override
+                                                public void onResponse(Bitmap bmp) {
+                                                    img.setImageBitmap(bmp);
 
 
-                                        ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
-                                            @Override
-                                            public void onResponse(Bitmap bmp) {
-                                                img.setImageBitmap(bmp);
-
-
-                                            }
-                                        }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                img.setImageResource(R.drawable.oops2);
-                                            }
-                                        });
-                                        queue.add(imgRequest);
+                                                }
+                                            }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    img.setImageResource(R.drawable.oops2);
+                                                }
+                                            });
+                                            queue.add(imgRequest);
+                                        }
                                     }
                                     else{
                                         img.setImageResource(R.drawable.oops2);
@@ -275,22 +283,30 @@ public class MainActivity extends AppCompatActivity {
 
                                     if(response.has("url")){
 
+                                        if(response.getString("media_type").equals("video")){
+                                            img.setVisibility(View.INVISIBLE);
+                                            webvid.setVisibility(View.VISIBLE);
+                                            webvid.loadUrl(picurl);
+                                        }
+                                        else{
+                                            webvid.setVisibility(View.INVISIBLE);
+                                            //webvid.loadUrl("about:blank");
+                                            img.setVisibility(View.VISIBLE);
+                                            ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
+                                                @Override
+                                                public void onResponse(Bitmap bmp) {
+                                                    img.setImageBitmap(bmp);
 
 
-                                        ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
-                                            @Override
-                                            public void onResponse(Bitmap bmp) {
-                                                img.setImageBitmap(bmp);
-
-
-                                            }
-                                        }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
-                                            @Override
-                                            public void onErrorResponse(VolleyError error) {
-                                                img.setImageResource(R.drawable.oops2);
-                                            }
-                                        });
-                                        queue.add(imgRequest);
+                                                }
+                                            }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+                                                @Override
+                                                public void onErrorResponse(VolleyError error) {
+                                                    img.setImageResource(R.drawable.oops2);
+                                                }
+                                            });
+                                            queue.add(imgRequest);
+                                        }
                                     }
                                     else{
                                         img.setImageResource(R.drawable.oops2);
