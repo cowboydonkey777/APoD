@@ -1,18 +1,29 @@
 package com.example.apoddemo;
 
+import android.Manifest;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.constraint.Constraints;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -30,8 +41,14 @@ import org.json.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.nio.channels.FileChannel;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -73,25 +90,83 @@ public class MainActivity extends AppCompatActivity {
         final String[] date = {formatter(day)};
         time.setText(formatter(currentDateDay));
 
-        Spinner spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.saveload, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
-
-        //String url = "https://www.google.com";
         //String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY";
         final String keyurl = "https://api.nasa.gov/planetary/apod?api_key=hCcahvUhc0xMW2H2mox6vYpS7jKPU2SM1Rv5xMhZ";
         final String[] url = {""};
-        //url.concat("&date=2018-06-10");
+
+        final Boolean[] saveable = {false};
 
         final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
 
         Button prevBtn = (Button) findViewById(R.id.prevBtn);
         Button nextBtn = (Button) findViewById(R.id.nextBtn);
         Button fetch = (Button) findViewById(R.id.fetch);
-
+        ImageButton saveBtn = (ImageButton) findViewById(R.id.saveBtn);
         final RequestQueue queue = Volley.newRequestQueue(this);
+
+        saveBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                JsonObjectRequest updateRequest = new JsonObjectRequest(Request.Method.GET, url[0], null,
+                        new Response.Listener<JSONObject>(){
+                            @Override
+                            public void onResponse(JSONObject response){
+                                try{
+                                    String picurl = response.getString("url");
+
+                                    ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
+                                        @Override
+                                        public void onResponse(Bitmap bmp) {
+                                            if (saveable[0].equals(true)) {
+                                                Date nameget = day.getTime();
+                                                String savename = formatter(nameget);
+
+
+                                                String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                                                requestPermissions(permissions, 1);
+                                                OutputStream out;
+                                                File filepath = Environment.getExternalStorageDirectory();
+                                                File dir = new File(filepath.getAbsolutePath() + "/Pictures");
+                                                dir.mkdirs();
+                                                savename.concat(".png");
+                                                File file = new File(dir, savename);
+
+                                                Toast.makeText(MainActivity.this, "Image saved to: " + dir, Toast.LENGTH_SHORT).show();
+
+                                                try{
+                                                    out = new FileOutputStream(file);
+
+                                                    bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+                                                    out.flush();
+                                                    out.close();
+                                                }
+                                                catch(Exception e){
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                        }
+                                    }, 0, 0, null, Bitmap.Config.RGB_565, new Response.ErrorListener() {
+                                        @Override
+                                        public void onErrorResponse(VolleyError error) {
+                                            img.setImageResource(R.drawable.oops2);
+                                        }
+                                    });
+                                    queue.add(imgRequest);
+                                }catch(JSONException e){
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        desc.setText(R.string.responseError);
+                    }
+                });
+                queue.add(updateRequest);
+            }
+        });
 
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(response.has("url")){
 
                                         if(response.getString("media_type").equals("video")){
+                                            saveable[0] = false;
                                             img.setVisibility(View.INVISIBLE);
                                             webvid.setVisibility(View.VISIBLE);
                                             webvid.loadUrl(picurl);
@@ -137,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
                                             ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
                                                 @Override
                                                 public void onResponse(Bitmap bmp) {
+                                                    saveable[0] = true;
                                                     img.setImageBitmap(bmp);
 
 
@@ -208,6 +285,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(response.has("url")){
 
                                         if(response.getString("media_type").equals("video")){
+                                            saveable[0] = false;
                                             img.setVisibility(View.INVISIBLE);
                                             webvid.setVisibility(View.VISIBLE);
                                             webvid.loadUrl(picurl);
@@ -219,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
                                             ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
                                                 @Override
                                                 public void onResponse(Bitmap bmp) {
+                                                    saveable[0] = true;
                                                     img.setImageBitmap(bmp);
 
 
@@ -284,6 +363,7 @@ public class MainActivity extends AppCompatActivity {
                                     if(response.has("url")){
 
                                         if(response.getString("media_type").equals("video")){
+                                            saveable[0] = false;
                                             img.setVisibility(View.INVISIBLE);
                                             webvid.setVisibility(View.VISIBLE);
                                             webvid.loadUrl(picurl);
@@ -295,6 +375,7 @@ public class MainActivity extends AppCompatActivity {
                                             ImageRequest imgRequest = new ImageRequest(picurl, new Response.Listener<Bitmap>() {
                                                 @Override
                                                 public void onResponse(Bitmap bmp) {
+                                                    saveable[0] = true;
                                                     img.setImageBitmap(bmp);
 
 
@@ -329,6 +410,50 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void SaveFile(Bitmap bmp, String filename){
+        Log.d("Hi there", "hello\n\n");
+
+        //File place = new File(Environment.getExternalStorageDirectory() + "/NASA");
+
+        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        requestPermissions(permissions, 1);
+        //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        //startActivityForResult(intent,);
+
+        File file = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES), filename);
+        if(!file.exists()){
+
+            file.mkdirs();
+        }
+
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        bmp.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
+
+       /* if(!place.exists()){
+            File fmake = new File(Environment.getExternalStorageDirectory().getPath().concat("/NASA/" + "test" + ".png"));
+            fmake.mkdirs();
+        }*/
+
+        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/test.png");
+        if(f.exists()){
+            f.delete();
+        }
+        else{
+            try {
+                FileOutputStream out = new FileOutputStream(f);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
+                out.flush();
+                out.close();
+            }
+            catch(Exception e){
+                e.printStackTrace();
+                Log.d("exception", "eeeeee\n\n");
+            }}
+        Log.d("Hi there", "goodbye\n\n");
     }
 
     public String formatter(Date date){
