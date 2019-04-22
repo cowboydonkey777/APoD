@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         TextView desc = (TextView) findViewById(R.id.imageDescription);
         desc.setMovementMethod(new ScrollingMovementMethod());
+        // probably packed too much into one functin, but i got carried away with it
         fetchInfo();
     }
 
