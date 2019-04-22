@@ -79,21 +79,26 @@ public class MainActivity extends AppCompatActivity {
         final ImageView img = (ImageView) findViewById(R.id.podImg);
         final WebView webvid = (WebView) findViewById(R.id.podWeb);
 
+        // not all urls are images, some are videos. webviews can play those
         WebSettings webset = webvid.getSettings();
         webset.setJavaScriptEnabled(true);
 
+        // need a date to build a url. currentday is held constant, day can change
         final Calendar currentDay = Calendar.getInstance();
         final Date currentDateDay = currentDay.getTime();
         final Calendar day = Calendar.getInstance();
         final TextView time = (TextView) findViewById(R.id.date);
 
+        // formatter turns day into format yyyy-MM-dd. M is month, m is minutes
         final String[] date = {formatter(day)};
         time.setText(formatter(currentDateDay));
 
         //String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY";
+        // applied for my own api key, it's the one below
         final String keyurl = "https://api.nasa.gov/planetary/apod?api_key=hCcahvUhc0xMW2H2mox6vYpS7jKPU2SM1Rv5xMhZ";
         final String[] url = {""};
 
+        // if true, user can save, if false, user cannot save
         final Boolean[] saveable = {false};
 
         final int imgDefault = getResources().getIdentifier("@drawable/rocket", null, getPackageName());
@@ -122,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
                                                 String savename = formatter(nameget);
 
 
+                                                // saves to a directory called storage/emulated/0/Pictures
+                                                // it's internal storage from what i can tell, yet i need external storage?
                                                 String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
                                                 requestPermissions(permissions, 1);
                                                 OutputStream out;
@@ -131,11 +138,13 @@ public class MainActivity extends AppCompatActivity {
                                                 savename.concat(".png");
                                                 File file = new File(dir, savename);
 
+                                                // notifies the user they just saved
                                                 Toast.makeText(MainActivity.this, "Image saved to: " + dir, Toast.LENGTH_SHORT).show();
 
                                                 try{
                                                     out = new FileOutputStream(file);
 
+                                                    // this is what is actually saving
                                                     bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
                                                     out.flush();
                                                     out.close();
@@ -168,6 +177,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // -----------------------------------------------------------------------------------------
+
+        // sets dat to previous day, pulls image/video
         prevBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                 date[0] = date[0].concat(formatter(volDay));
                 url[0] = keyurl;
                 url[0] = url[0].concat(date[0]);
-
+                //important value in the above is the result of url[0], it's the url used to request image
 
                 //---------------------
                 JsonObjectRequest updateRequest = new JsonObjectRequest(Request.Method.GET, url[0], null,
@@ -187,11 +199,13 @@ public class MainActivity extends AppCompatActivity {
                             public void onResponse(JSONObject response) {
                                 try {
 
+                                    // picurl: picture url. used to request through volley either an image or video
                                     String picurl = response.getString("url");
 
                                     title.setText(response.getString("title"));
                                     if(response.has("copyright")) {
                                             copyright.setText(response.getString("copyright").replace(System.getProperty("line.separator"), " "));
+                                            // from demo, useful to figure out how things work
                                        }
                                     else {
                                         copyright.setText("");
@@ -202,6 +216,7 @@ public class MainActivity extends AppCompatActivity {
 
                                         if(response.getString("media_type").equals("video")){
                                             saveable[0] = false;
+                                            // image and videos are not displayed together, when one is up, set the other invisible
                                             img.setVisibility(View.INVISIBLE);
                                             webvid.setVisibility(View.VISIBLE);
                                             webvid.loadUrl(picurl);
@@ -248,11 +263,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // -----------------------------------------------------------------------------------------
+
+        // get image/video for next day
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 day.add(Calendar.DATE, 1);
-                while(day.compareTo(currentDay) > 0){
+                while(day.compareTo(currentDay) > 0){ //if day is greater than current constant, loop it back
                     //day[0] = currentDay;
                     day.add(Calendar.DATE, -1);
                 }
@@ -332,12 +350,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // -----------------------------------------------------------------------------------------
+
+        // get image/video from the current day
         fetch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 time.setText(formatter(currentDateDay));
                 url[0] = keyurl;
-                while(day.compareTo(currentDay) > 0){
+                while(day.compareTo(currentDay) > 0){ // loop day back to current day if either before day, or somehow greater than day
                     day.add(Calendar.DATE, -1);
                 }
                 while(day.compareTo(currentDay) < 0){
@@ -410,50 +431,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.M)
-    public void SaveFile(Bitmap bmp, String filename){
-        Log.d("Hi there", "hello\n\n");
-
-        //File place = new File(Environment.getExternalStorageDirectory() + "/NASA");
-
-        String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        requestPermissions(permissions, 1);
-        //Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        //startActivityForResult(intent,);
-
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES), filename);
-        if(!file.exists()){
-
-            file.mkdirs();
-        }
-
-        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 40, bytes);
-
-       /* if(!place.exists()){
-            File fmake = new File(Environment.getExternalStorageDirectory().getPath().concat("/NASA/" + "test" + ".png"));
-            fmake.mkdirs();
-        }*/
-
-        File f = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "/test.png");
-        if(f.exists()){
-            f.delete();
-        }
-        else{
-            try {
-                FileOutputStream out = new FileOutputStream(f);
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, out);
-                out.flush();
-                out.close();
-            }
-            catch(Exception e){
-                e.printStackTrace();
-                Log.d("exception", "eeeeee\n\n");
-            }}
-        Log.d("Hi there", "goodbye\n\n");
     }
 
     public String formatter(Date date){
